@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Copyright (C) 2013 Daniel Reis
+#    Copyright (C) 2013 - 2014 Daniel Reis
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,22 +18,24 @@
 #
 ##############################################################################
 {
-    'name': 'SLA Control on Project Issues and Tasks',
-    'summary': 'Install service level control for Issies and Tasks',
+    'name': 'SLA Control on Project Issues',
+    'summary': 'Define and control service levels on Project Issues',
     'version': '1.1',
     "category": "Project Management",
     'description': """\
 SLAs are defined in the Project's related Analytic Account.
 See the Service Level Agreements base module for more details.
-
-The SLA features have been split into several smaller modules.
-This module makes easier to keep compatibility with existing installations.
 """,
     'author': 'Daniel Reis',
     'website': '',
     'depends': [
-        'project_sla_task',
-        'project_sla_issue',
+        'project_sla_base',
+        'project_issue',
     ],
+    'data': [
+        'project_issue_view.xml',
+    ],
+    'demo': ['project_sla_demo.xml'],
+    'test': ['test/project_sla.yml'],
     'installable': True,
 }
