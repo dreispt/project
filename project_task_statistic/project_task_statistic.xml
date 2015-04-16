@@ -17,6 +17,8 @@
                 <page string="Extra Info" position="after">
                     <page name="statistics_page" string="Statistics">
                         <group>
+                            <field name="date_opened" />
+                            <field name="date_closed" />
                             <field name="day_open" />
                             <field name="day_close" />
                             <field name="working_hours_open" />
