@@ -42,8 +42,9 @@ Features:
 
 (Icon image credits to Everaldo Coelho, Crystal icon set)
 """,
-    'author': 'Daniel Reis',
+    'author': "Daniel Reis,Odoo Community Association (OCA)",
     'website': '',
+    'license': 'AGPL-3',
     'depends': [
         'project',
     ],

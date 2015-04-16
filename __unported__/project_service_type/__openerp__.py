@@ -28,13 +28,14 @@
 {
      "name": "Add type of service on project",
      "version": "1.0",
-     "author": "Camptocamp",
+     "author": "Camptocamp,Odoo Community Association (OCA)",
      "category": "Generic Modules/Projects & Services",
      "description":
 """
 This will add a type of service on project allowing you to categorize them.
 """,
      "website": "http://camptocamp.com",
+     "license": "GPL-2 or any later version",
      "depends": [
             "project",
                 ],
