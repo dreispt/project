@@ -124,42 +124,47 @@ class SLAControl(orm.Model):
         self.write(cr, uid, control_ids, {'sla_state': '3'}, context=context)
         return True
 
-    def _compute_sla_date(self, cr, uid, working_hours, res_uid,
-                          start_date, hours, context=None):
+    def _compute_sla_date(self, cr, uid, calendar_id, res_uid,
+                          date_start, hours, context=None):
         """
         Return a limit datetime by adding hours to a start_date, honoring
-        a working_time calendar and a resource's (res_uid) timezone and
-        availability (leaves)
+        a working_time calendar and a resource's (res_uid) timezone.
 
-        Currently implemented using a binary search using
-        _interval_hours_get() from resource.calendar. This is
-        resource.calendar agnostic, but could be more efficient if
-        implemented based on it's logic.
-
-        Known issue: the end date can be a non-working time; it would be
-        best for it to be the latest working time possible. Example:
-        if working time is 08:00 - 16:00 and start_date is 19:00, the +8h
-        end date will be 19:00 of the next day, and it should rather be
+        Known limitation: the end date can be a non-working time.
+        Example: if working time is 08:00 - 16:00 and start_date is 19:00,
+        the +8h end date will be 19:00 of the next day, and it could rather be
         16:00 of the next day.
         """
-        assert isinstance(start_date, dt)
+        assert isinstance(date_start, dt)
         assert isinstance(hours, int) and hours >= 0
 
-        cal_obj = self.pool.get('resource.calendar')
-        target, step = hours * 3600,  16 * 3600
-        lo, hi = start_date, start_date
-        while target > 0 and step > 60:
-            hi = lo + timedelta(seconds=step)
-            check = int(3600 * cal_obj._interval_hours_get(
-                cr, uid, working_hours, lo, hi,
-                timezone_from_uid=res_uid, exclude_leaves=False,
-                context=context))
-            if check <= target:
-                target -= check
-                lo = hi
-            else:
-                step = int(step / 4.0)
-        return hi
+        cal = self.pool.get('resource.calendar').browse(
+            cr, uid, calendar_id, context=context)
+        if not cal.attendance_ids:
+            _logger.warning('Calendar %s has no work periods!' % cal.name)
+            return None
+
+        get_work_time = lambda lo, step: timedelta(
+            hours=cal.get_working_hours(
+                lo, lo + step, resource_id=res_uid, compute_leaves=False)[0])
+
+        time_target = timedelta(hours=hours)
+        time_step = timedelta(hours=24)
+        time_error = timedelta(minutes=1)
+        date_lo = date_start  # searching from this date on
+        time_lo = timedelta(hours=0)  # hours already found until date_lo
+
+        while True:
+            time_hi = time_lo + get_work_time(date_lo, time_step)
+            if abs(time_hi - time_target) < time_error:
+                return date_lo + time_step
+            elif time_hi < time_target:
+                # walk to the next step
+                date_lo += time_step
+                time_lo = time_hi
+            else:  # time_to_result > time_target:
+                # binary search in the current step
+                time_step = time_step / 2
 
     def _get_computed_slas(self, cr, uid, doc, context=None):
         """
@@ -187,6 +192,14 @@ class SLAControl(orm.Model):
                    safe_getattr(doc, 'project_id.analytic_account_id.sla_ids'))
         if not sla_ids:
             return res
+        cal = safe_getattr(doc, 'project_id.resource_calendar_id')
+        if not cal:
+            _logger.warning('Project %s has no calendar!' %
+                            doc.project_id.name)
+            return res
+        if not cal.attendance_ids:
+            _logger.warning('Calendar %s has no work periods!' % cal.name)
+            return res
 
         for sla in sla_ids:
             if sla.control_model != doc._name:
@@ -197,14 +210,12 @@ class SLAControl(orm.Model):
                 if not l.condition or safe_eval(l.condition, eval_context):
                     start_date = dt.strptime(doc.create_date, DT_FMT)
                     res_uid = doc.user_id.id or uid
-                    cal = safe_getattr(
-                        doc, 'project_id.resource_calendar_id.id')
                     warn_date = self._compute_sla_date(
-                        cr, uid, cal, res_uid,
+                        cr, uid, cal.id, res_uid,
                         start_date, l.warn_qty,
                         context=context)
                     lim_date = self._compute_sla_date(
-                        cr, uid, cal, res_uid,
+                        cr, uid, cal.id, res_uid,
                         warn_date, l.limit_qty - l.warn_qty,
                         context=context)
                     # evaluate sla state
