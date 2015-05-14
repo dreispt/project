@@ -7,10 +7,16 @@
             <field name="model">project.task.type</field>
             <field name="inherit_id" ref="project.task_type_edit"/>
             <field name="arch" type="xml">
+
+                <field name="sequence" position="after">
+                    <field name="project_ids" widget="many2many_tags" />
+                </field>
+
                 <field name="fold" position="after">
                     <field name="fold_statusbar" />
                     <field name="state" />
                 </field>
+
             </field>
         </record>
 

@@ -33,6 +33,8 @@ class ProjectTaskType(models.Model):
     _inherit = 'project.task.type'
     state = fields.Selection(_TASK_STATE, 'State')
     fold_statusbar = fields.Boolean('Folded in Statusbar')
+    project_ids = fields.Many2many(
+        'project.project', string="Used in Projects", readonly=True)
 
     @api.model
     def _init_fold_statusbar(self):

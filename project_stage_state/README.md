@@ -9,3 +9,5 @@ different Projects.
 
 Additionally adds a “Folded in Statusbar” flag to Stages, giving control on
 the stages visible on Tasks and Issues Stage statusbar.
+
+Also adds to Sates an information of the Projects it is used on.
