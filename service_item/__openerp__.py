@@ -32,6 +32,7 @@
     ],
     'data': [
         'service_item_view.xml',
+        'security/ir.model.access.csv',
     ],
     'installable': True,
 }
