@@ -36,13 +36,13 @@ class ServiceItem(models.Model):
     date_installation = fields.Date('Installation Date')
 
     analytic_account_id = fields.Many2one(
-        string='Contract',
+        string='Contract', index=True,
         comodel_name='account.analytic.account')
     department_id = fields.Many2one(
-        string='Department',
+        string='Department', store=True, index=True,
         related='analytic_account_id.department_id')
     partner_id = fields.Many2one(
-        string='Customer',
+        string='Customer', store=True, index=True,
         related='analytic_account_id.partner_id')
 
     item_group_id = fields.Many2one(
