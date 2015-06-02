@@ -1,2 +1,1 @@
-# -*- coding: utf-8 -*-
-from . import service_item
+from . import service_item_model

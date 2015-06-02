@@ -20,7 +20,7 @@
 {
     'name': 'Service Item',
     'summary': 'Use Projects for Service Desks and service teams',
-    'version': '1.1',
+    'version': '1.0',
     "category": "Project Management",
     'description': """\
 
@@ -28,11 +28,10 @@
     'author': 'Daniel Reis',
     'website': '',
     'depends': [
-        'analytic','hr'
+        'analytic', 'hr'
     ],
     'data': [
-        'service_item.xml',
+        'service_item_view.xml',
     ],
     'installable': True,
-    'application': True,
 }

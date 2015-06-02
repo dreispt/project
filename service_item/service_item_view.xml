@@ -2,33 +2,27 @@
 <openerp>
     <data>
 
+    <!-- Service Item Group -->
+
         <record id="service_item_group_tree" model="ir.ui.view">
             <field name="name">service.item.group.tree</field>
             <field name="model">service.item.group</field>
             <field name="arch" type="xml">
-                <tree string="Service Itens group">
+                <tree string="Service Items group">
                     <field name="name"/>
                     <field name="description"/>
                 </tree>
             </field>
         </record>
 
-        <!-- Service Item Group Form -->
         <record id="service_item_group" model="ir.actions.act_window">
             <field name="name">Service Item Group</field>
             <field name="res_model">service.item.group</field>
-            <field name="view_type">form</field>
-            <field name="view_id" ref="service_item_group_tree"/>
-            <field name="help" type="html">
-              <p class="oe_view_nocontent_create">
-                Click to add a (...)
-              </p><p>
-                Define (...)
-              </p>
-            </field>
+            <field name="view_mode">tree,form</field>
         </record>
 
-    <!-- Service Contract Group Form -->
+    <!-- Service Contract Group -->
+
         <record id="service_contract_group_tree" model="ir.ui.view">
             <field name="name">service.contract.group.tree</field>
             <field name="model">service.contract.group</field>
@@ -44,33 +38,29 @@
         <record id="service_contract_group" model="ir.actions.act_window">
             <field name="name">Service Contract Group</field>
             <field name="res_model">service.contract.group</field>
-            <field name="view_type">form</field>
-            <field name="view_id" ref="service_contract_group_tree"/>
-            <field name="help" type="html">
-              <p class="oe_view_nocontent_create">
-                Click to add a (...)
-              </p><p>
-                Define (...)
-              </p>
-            </field>
+            <field name="view_mode">tree,form</field>
         </record>
 
-    <!-- Service Item Form -->
+
+    <!-- Service Item -->
+
         <record id="service_item_tree" model="ir.ui.view">
             <field name="name">service.item.tree</field>
             <field name="model">service.item</field>
             <field name="arch" type="xml">
                 <tree string="Service Item" editable="top">
-                    <field name="name" invisible="True"/>
-                    <field name="code" invisible="True"/>
+                    <!--
+                    <field name="name" />
+                    <field name="code" />
+                    -->
                     <field name="site_id"/>
                     <field name="analytic_account_id"/>
-                    <field name="department_id" readonly="True"/>
-                    <field name="partner_id" readonly="True"/>
                     <field name="contract_group_id"/>
                     <field name="item_group_id"/>
-                    <field name="state_id"/>
-                    <field name="date_instalation"/>
+                    <field name="state"/>
+                    <field name="date_installation"/>
+                    <field name="department_id" readonly="True"/>
+                    <field name="partner_id" readonly="True"/>
                 </tree>
             </field>
         </record>
@@ -78,15 +68,7 @@
         <record id="service_item" model="ir.actions.act_window">
             <field name="name">Service Item</field>
             <field name="res_model">service.item</field>
-            <field name="view_type">form</field>
-            <field name="view_id" ref="service_item_tree"/>
-            <field name="help" type="html">
-              <p class="oe_view_nocontent_create">
-                Click to add a (...)
-              </p><p>
-                Define (...)
-              </p>
-            </field>
+            <field name="view_mode">tree,form</field>
         </record>
 
         <record id="view_service_item_filter" model="ir.ui.view">
@@ -94,40 +76,43 @@
             <field name="model">service.item</field>
             <field name="arch" type="xml">
                 <search name="Search Service Item">
-                    <field name="partner_id"/>
                     <field name="site_id"/>
                     <field name="analytic_account_id"/>
-                    <filter string="Draft" name="draft" domain="[('state_id', '=','draft')]"/>
-                    <filter string="Active" name="active" domain="[('state_id', '=','active')]"/>
-                    <filter string="Close" name="close" domain="[('state_id', '=','close')]"/>
+                    <field name="partner_id"/>
+                    <field name="item_group_id"/>
+                    <filter string="Draft" name="draft" domain="[('state', '=','draft')]"/>
+                    <filter string="Active" name="active" domain="[('state', '=','active')]"/>
                     <group expand="0" string="Group By">
-                        <filter string="Site" name="site_id" context="{'group_by':'site_id'}"/>
+                        <filter string="Department" name="group_by_department" context="{'group_by': 'department_id'}"/>
+                        <filter string="Customer" name="group_by_partner" context="{'group_by': 'partner_id'}"/>
+                        <filter string="Site" name="group_by_site" context="{'group_by': 'site_id'}"/>
+                        <filter string="Item Group" name="group_by_item_group" context="{'group_by': 'item_group_id'}"/>
                     </group>
                 </search>
             </field>
         </record>
 
-        <menuitem id="base.menu_project_config_Services"
+        <menuitem id="menu_project_config_services"
                   name="Services"
                   parent="base.menu_definitions"
                   sequence="3"/>
 
         <menuitem action="service_item"
-                  name="Service Item"
+                  name="Service Items"
                   id="menu_service_item"
                   parent="project.menu_project_management"
                   sequence="4"/>
 
         <menuitem action="service_contract_group"
-                  name="Service Contract Group"
+                  name="Contract Groups"
                   id="menu_service_contract_group"
-                  parent="base.menu_project_config_Services"
+                  parent="menu_project_config_services"
                   sequence="2"/>
 
         <menuitem action="service_item_group"
-                  name="Service Item Group"
+                  name="Item Groups"
                   id="menu_service_item_group"
-                  parent="base.menu_project_config_Services"
+                  parent="menu_project_config_services"
                   sequence="3"/>
 
     </data>

@@ -18,26 +18,39 @@
 #
 ##############################################################################
 
-from openerp import models, fields, api
+from openerp import models, fields
 
 
 class ServiceItem(models.Model):
     _name = 'service.item'
     _description = "Service Item"
 
-    #service_item_id = fields.Char("Service Item ID")
     name = fields.Char('Name')
     code = fields.Char('Code')
     site_id = fields.Many2one(string='Site', comodel_name='res.partner')
-    state_id = fields.Selection(string='State', selection=[('draft', 'Draft'),('active', 'Active'),('close', 'Closed')])
-    date_instalation = fields.Date('Date Instalation')
+    state = fields.Selection(
+        string='State',
+        selection=[('draft', 'Draft'),
+                   ('active', 'Active'),
+                   ('close', 'Closed')])
+    date_installation = fields.Date('Installation Date')
 
-    analytic_account_id = fields.Many2one(string='Analytic Account', comodel_name='account.analytic.account')
-    department_id = fields.Many2one(string='Department', related='analytic_account_id.department_id')
-    partner_id = fields.Many2one(string='Customer', related='analytic_account_id.partner_id')
-    
-    item_group_id = fields.Many2one(string="Item Group", comodel_name='service.item.group')
-    contract_group_id = fields.Many2one(string="Contract Group", comodel_name='service.contract.group')
+    analytic_account_id = fields.Many2one(
+        string='Contract',
+        comodel_name='account.analytic.account')
+    department_id = fields.Many2one(
+        string='Department',
+        related='analytic_account_id.department_id')
+    partner_id = fields.Many2one(
+        string='Customer',
+        related='analytic_account_id.partner_id')
+
+    item_group_id = fields.Many2one(
+        string="Item Group",
+        comodel_name='service.item.group')
+    contract_group_id = fields.Many2one(
+        string="Contract Group",
+        comodel_name='service.contract.group')
 
 
 class ServiceItemGroup(models.Model):
@@ -54,4 +67,3 @@ class ServiceContractGroup(models.Model):
 
     name = fields.Char('Name')
     description = fields.Char('Description')
-
