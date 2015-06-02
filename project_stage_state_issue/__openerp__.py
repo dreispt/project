@@ -19,7 +19,7 @@
 ##############################################################################
 
 {
-    'name': 'Add State field to Project Stages',
+    'name': 'Add State field to Project Issues',
     'version': '1.0',
     'category': 'Project Management',
     'summary': 'Restore State attribute removed from Project Stages in 8.0',
@@ -27,12 +27,12 @@
     'website': 'https://github.com/OCA/project-service',
     'license': 'AGPL-3',
     'depends': [
-        'project',
+        'project_stage_state',
+        'project_issue',
     ],
     'data': [
-        'project_view.xml',
-        'project_task_type_data.xml',
-        'security/ir.model.access.csv',
+        'project_issue_view.xml',
         ],
     'installable': True,
+    'auto_install': True,
 }
