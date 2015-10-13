@@ -18,19 +18,18 @@
 #
 ##############################################################################
 
-from openerp.osv import fields, orm
+from openerp import fields, models, api
 import logging
 _logger = logging.getLogger(__name__)
 
 
-class AnalyticAccount(orm.Model):
+class AnalyticAccount(models.Model):
     """ Add SLA to Analytic Accounts """
     _inherit = 'account.analytic.account'
-    _columns = {
-        'sla_ids': fields.many2many(
-            'project.sla', string='Service Level Agreement'),
-        }
+    sla_ids = fields.Many2many(
+        'project.sla', string='Service Level Agreement')
 
+    @api.noguess
     def _reapply_sla(self, cr, uid, ids, recalc_closed=False, context=None):
         """
         Force SLA recalculation on open documents that already are subject to
@@ -39,7 +38,7 @@ class AnalyticAccount(orm.Model):
         The ``recalc_closed`` flag allows to also recompute closed documents.
         """
         ctrl_obj = self.pool['project.sla.control']
-        for contract in self.browse(cr, uid, ids, context=context):
+        for contract in self:
             # for each contract, and for each model under SLA control ...
             ctrl_models = set([sla.control_model for sla in contract.sla_ids])
             for model_name in ctrl_models:
@@ -60,6 +59,6 @@ class AnalyticAccount(orm.Model):
                     ctrl_obj.store_sla_control(cr, uid, docs, context=context)
         return True
 
-    def reapply_sla(self, cr, uid, ids, context=None):
+    def reapply_sla(self):
         """ Reapply SLAs button action """
-        return self._reapply_sla(cr, uid, ids, context=context)
+        return self._reapply_sla()
